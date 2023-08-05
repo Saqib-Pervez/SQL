@@ -1,0 +1,5 @@
+SELECT 
+  customer.first_name, referrer.first_name
+FROM 
+  customers AS customer LEFT OUTER JOIN customers AS referrer
+  ON customer.referrer_id = referrer.customer_id
