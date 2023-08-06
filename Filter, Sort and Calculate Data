@@ -1,0 +1,139 @@
+/*Examples of SQL Clauses for Filtering, Sorting and calculating Data*/
+
+1. /* Filtering*/
+
+
+/*Where*/
+
+SELECT * 
+FROM 
+employee WHERE department = 'HR';
+
+/*BETWEEN*/
+
+SELECT * 
+FROM  
+  sales WHERE order_date 
+        BETWEEN '2023-01-01' AND '2023-06-30';
+
+/*IN*/
+
+SELECT * 
+FROM 
+    customers WHERE country 
+              IN ('USA', 'Canada', 'UK');
+
+/*OR and AND*/
+
+SELECT *
+FROM 
+    products WHERE category = 'Electronics' 
+    AND price > 500 OR stock_quantity < 50;
+
+/*NOT*/
+     
+SELECT * 
+FROM 
+   orders WHERE NOT status = 'Shipped';
+
+
+     
+2. /*Sorting*/
+
+/*ORDER BY*/
+     
+SELECT * 
+FROM 
+    employees
+ORDER BY
+    salary DESC;
+    
+/*GROUP BY*/ 
+     
+SELECT 
+     department, COUNT(*) AS employee_count
+FROM 
+     employees
+GROUP BY 
+     department;
+     
+/*HAVING Clause*/
+    
+SELECT 
+     department, AVG(salary) AS avg_salary
+FROM 
+     employees
+GROUP BY 
+     department
+HAVING AVG(salary) > 50000;
+
+
+
+3. /*Wildcards*/
+/* % */
+     
+SELECT * 
+FROM
+    products WHERE product_name LIKE '%keyboard%';
+
+SELECT * 
+FROM 
+    products WHERE product_name LIKE 'Mobile%';
+
+SELECT * 
+FROM 
+    products WHERE product_name LIKE '%Case';
+  
+
+4. /*Aggregate Functions:*/
+   /*AVG*/
+     
+ SELECT 
+     AVG(salary) AS avg_salary 
+ FROM 
+     employees;
+     
+ /*COUNT*/
+    
+  SELECT 
+       COUNT(*) AS total_orders FROM orders;
+     
+/*MIN and MAX*/
+    
+SELECT 
+     MIN(price) AS min_price, 
+     MAX(price) AS max_price 
+FROM 
+     products;
+     
+
+5. /*Math Operators: (please excuse my dear aunt sally) */ 
+/*Parentheses*/
+     
+SELECT 
+    (quantity * price) AS total_cost 
+FROM 
+    order_items;
+     
+/*Exponents*/
+     
+SELECT 
+     product_name, price, price * price AS squared_price 
+FROM 
+    products;
+
+/* ( *, /, +, - ) */
+
+SELECT
+     employee_id,
+     employee_name,
+     salary,
+     bonus,
+     deduction,
+     (salary + bonus - deduction) AS total_earnings,
+     ((salary + bonus - deduction) * 0.8) AS net_salary, -- 0.8 represents 80% after applying 20% tax
+     ((salary + bonus - deduction) / 12) AS monthly_net_salary -- Divide by 12 to get monthly net salary
+FROM
+     employees;
+
+
