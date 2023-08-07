@@ -1,4 +1,7 @@
-/*Qquery to pull email addresses, but only for non-deleted users.*/
+/*Erroe Codes*/
+
+
+/*Query to pull email addresses, but only for non-deleted users.*/
 
 SELECT 
     Concat(first_name, ' ' ,last_name), 
@@ -9,6 +12,7 @@ From
     dsv1069.users
     WHERE deleted_at is NULL
 
+
  /*Count the number of items for sale in each category*/
 
 SELECT 
@@ -18,9 +22,76 @@ FROM
 GROUP BY
     category
 
+
 /*JOIN the users​ table to the orders table.*/
 
 SELECT *
 From 
     users 
 JOIN orders on users.id = order.userid
+
+
+
+/*Count the number of viewed_item events.*/
+
+SELECT 
+    COUNT(Distinct(event_id))
+FROM
+    dsv1069.events
+WHERE event_name = 'view_item'
+
+
+
+/*Compute the number of items in the items table which have been ordered.*/
+
+SELECT 
+    COUNT(items.item_id) AS item_count
+FROM
+    dsv1069.items
+JOIN 
+    orders 
+ON 
+    orders.item_id = items.id;
+
+
+/* IF a user has ordered something, and when their first purchase was 
+including the view of users who haven't order anything.*/
+
+SELECT 
+    users.id AS user_id,
+    MIN(orders.paid_at) AS min_paid_at
+FROM 
+    dsvq069.orders
+LEFT JOIN
+    dsv1069.users
+ON 
+    orders.user.id = users.id
+GROUP BY 
+    users.id
+
+
+/*Figure out what percent of users have ever viewed the user profile page and make sure the number of users adds up*/
+
+SELECT
+   (CASE WHEN first_view IS NULL THEN false ELSE true END) AS has_viewed_profile_page,
+   COUNT(user_id) as users,
+   COUNT(CASE WHEN first_view IS NOT NULL THEN user_id END) as users_with_viewed_profile,
+   COUNT(user_id) + COUNT(CASE WHEN first_view IS NOT NULL THEN user_id END) as total_users
+FROM 
+   (SELECT 
+      u.id AS user_id, 
+      MIN(event_time) as first_view
+   FROM 
+      dsv1069.users u
+   LEFT OUTER JOIN dsv1069.events e
+   ON e.user_id = u.id
+   WHERE 
+      event_name = 'view_user_profile'
+   GROUP BY 
+      u.id) first_profile_views
+GROUP BY 
+   (CASE WHEN first_view IS NULL THEN false ELSE true END);
+
+
+
+
