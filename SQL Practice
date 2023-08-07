@@ -1,0 +1,26 @@
+/*Qquery to pull email addresses, but only for non-deleted users.*/
+
+SELECT 
+    Concat(first_name, ' ' ,last_name), 
+    email_address, 
+    created_at, 
+    deleted_at
+From
+    dsv1069.users
+    WHERE deleted_at is NULL
+
+ /*Count the number of items for sale in each category*/
+
+SELECT 
+    COUNT(Distinct(event_id))
+FROM
+    dsv1069.items
+GROUP BY
+    category
+
+/*JOIN the users​ table to the orders table.*/
+
+SELECT *
+From 
+    users 
+JOIN orders on users.id = order.userid
