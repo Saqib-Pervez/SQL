@@ -137,3 +137,18 @@ AND
 GROUP BY 
   date(created_at)
 ORDER BY user_count DESC
+
+ 
+/*Count merged or deleted users*/
+
+SELECT 
+  date(created_at) AS day,
+  SUM(CASE WHEN deleted_at IS NOT NULL THEN 1 ELSE 0 END) AS deleted_users,
+  COUNT(*) AS total_users
+FROM 
+  dsv1069.users
+WHERE 
+  id <> parent_user_id OR parent_user_id IS NULL
+GROUP BY 
+  date(created_at)
+ORDER BY deleted_users DESC
