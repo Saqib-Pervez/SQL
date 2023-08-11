@@ -121,3 +121,19 @@ GROUP BY
   platform,
   item_id,
   referrer
+
+
+ /*Count the number of users added each day.*/
+
+SELECT
+  date(created_at) AS day,
+  COUNT(users.id) AS user_count
+FROM 
+  dsv1069.users
+WHERE 
+  deleted_at IS NULL 
+AND
+  (id <> parent_user_id OR parent_user_id IS NULL) 
+GROUP BY 
+  date(created_at)
+ORDER BY user_count DESC
