@@ -186,3 +186,23 @@ GROUP BY
   registration_date
 ORDER BY 
   registration_date
+
+/*No users were created, but some users were deleted or merged*/
+
+SELECT 
+  dates_rollup.date AS registration_date,
+  COALESCE(SUM(CASE WHEN users.created_at IS NOT NULL THEN 1 ELSE 0 END), 0) AS new_users,
+  COALESCE(SUM(CASE WHEN users.deleted_at IS NOT NULL THEN 1 ELSE 0 END), 0) AS deleted_users,
+  COALESCE(SUM(CASE WHEN users.merged_at IS NOT NULL THEN 1 ELSE 0 END), 0) AS merged_users
+FROM 
+  dsv1069.dates_rollup
+LEFT JOIN
+  dsv1069.users
+ON 
+  dates_rollup.date = DATE(users.created_at)
+WHERE 
+  users.id <> users.parent_user_id OR users.parent_user_id IS NULL
+GROUP BY 
+  dates_rollup.date
+ORDER BY 
+  registration_date
