@@ -152,3 +152,20 @@ WHERE
 GROUP BY 
   date(created_at)
 ORDER BY deleted_users DESC
+
+
+/*Count the number of users deleted each day. Then count the number of users removed due to merging*/
+
+SELECT 
+  date(created_at) AS day,
+  SUM(CASE WHEN deleted_at IS NOT NULL THEN 1 ELSE 0 END) AS deleted_users,
+  SUM(CASE WHEN merged_at IS NOT NULL THEN 1 ELSE 0 END) AS merged_users
+FROM 
+  dsv1069.users
+WHERE 
+  id <> parent_user_id OR parent_user_id IS NULL
+GROUP BY 
+  date(created_at)
+ORDER BY 
+  merged_users DESC
+
