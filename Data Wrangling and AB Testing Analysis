@@ -1,4 +1,4 @@
-/*Erroe Codes*/
+/*Error Codes*/
 
 
 /*Query to pull email addresses, but only for non-deleted users.*/
@@ -102,10 +102,10 @@ SELECT
   event_time,
   user_id,
   platform,
-  (CASE WHEN parameter_name = 'item_id'
+  Max(CASE WHEN parameter_name = 'item_id'
         THEN CAST(parameter_value AS int)
         ELSE NULL END) AS item_id,
-  (CASE WHEN parameter_name = 'referrer'
+  Max(CASE WHEN parameter_name = 'referrer'
         THEN parameter_value
         ELSE NULL END) AS referrer
 FROM 
@@ -114,3 +114,10 @@ WHERE
   event_name = 'view_item'
 ORDER BY 
   event_id
+GROUP BY 
+  event_id,
+  event_time,
+  user_id,
+  platform,
+  item_id,
+  referrer
