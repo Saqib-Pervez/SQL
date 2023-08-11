@@ -169,3 +169,20 @@ GROUP BY
 ORDER BY 
   merged_users DESC
 
+
+/*Create a table that has a column for the date, the number of users created,
+the number of users deleted and the number of users merged that day so that null columns return 0. .*/
+
+SELECT 
+  DATE(created_at) AS registration_date,
+  COALESCE(SUM(CASE WHEN created_at IS NOT NULL THEN 1 ELSE 0 END), 0) AS new_users,
+  COALESCE(SUM(CASE WHEN deleted_at IS NOT NULL THEN 1 ELSE 0 END), 0) AS deleted_users,
+  COALESCE(SUM(CASE WHEN merged_at IS NOT NULL THEN 1 ELSE 0 END), 0) AS merged_users
+FROM 
+  dsv1069.users
+WHERE 
+  id <> parent_user_id OR parent_user_id IS NULL
+GROUP BY 
+  registration_date
+ORDER BY 
+  registration_date
