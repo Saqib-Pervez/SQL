@@ -206,3 +206,34 @@ GROUP BY
   dates_rollup.date
 ORDER BY 
   registration_date
+
+
+/* Create a subtable of orders per day. Make sure you decide whether you are counting invoices or line items.*/
+
+/*To create a subtable of orders per day, let's assume you have two tables: orders and items. Here's a SQL query for counting invoices (orders) per day:*/
+
+SELECT 
+    DATE(order_date) AS Date,
+    COUNT(DISTINCT order_id) AS Total_Orders
+FROM
+    orders
+GROUP BY
+    Date
+ORDER BY
+    Date;
+
+/*SQL query for counting line items per day:*/
+
+SELECT 
+    DATE(order_date) AS Date,
+    SUM(item_id) AS Total_Line_Items
+FROM
+    items
+JOIN
+    orders 
+ON 
+    items.order_id = orders.order_id
+GROUP BY
+    Date
+ORDER BY
+    Date;
