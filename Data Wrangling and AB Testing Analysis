@@ -329,7 +329,7 @@ LEFT JOIN
 LEFT JOIN 
   dsv1069.items  ON rv.item_id = dsv1069.items.id
 WHERE 
-  dsv1069.users.deleted_at is NULL -- Exclude deleted users
+  dsv1069.users.deleted_at is NOT NULL -- Exclude deleted users
 ORDER BY 
   rv.last_viewed DESC;
 
