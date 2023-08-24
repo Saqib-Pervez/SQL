@@ -280,3 +280,56 @@ ON
     dates_rollup.date >= daily_orders.day
 AND   
     dates_rollup.d7_ago < daily_orders.day
+
+
+/*Create the right subtable for recently viewed events using the view_item_events table. */
+
+SELECT 
+    user_id, 
+    item_id, 
+    referrer,
+    platform, 
+    MAX(event_time) AS last_viewed
+FROM 
+    dsv1069.view_item_events
+GROUP BY 
+    user_id, 
+    item_id,
+    referrer,
+    platform
+ORDER BY 
+    last_viewed DESC;
+
+
+ /*Check your joins. Join your tables together recent_views, users, items.
+Add in any extra filtering that you think would make this email better. For example should we include deleted users*/ 
+
+SELECT 
+  rv.user_id,
+  rv.item_id,
+  rv.referrer,
+  rv.platform,
+  rv.last_viewed
+FROM
+  (
+    --subtable query
+    SELECT 
+        user_id,
+        item_id, 
+        referrer,
+        platform, 
+        MAX(event_time) AS last_viewed
+    FROM 
+      dsv1069.view_item_events
+    GROUP BY 
+      user_id, item_id, referrer, platform
+  ) rv
+LEFT JOIN 
+  dsv1069.users  ON rv.user_id = dsv1069.users.id
+LEFT JOIN 
+  dsv1069.items  ON rv.item_id = dsv1069.items.id
+WHERE 
+  dsv1069.users.deleted_at is NULL -- Exclude deleted users
+ORDER BY 
+  rv.last_viewed DESC;
+
