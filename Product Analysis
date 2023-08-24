@@ -1,0 +1,90 @@
+/* Count how many users we have? */
+
+SELECT COUNT(DISTINCT id)
+FROM dsv1069.users
+
+/* Find out how many users have ever ordered? */
+
+SELECT
+  COUNT(users.id)
+FROM 
+  dsv1069.orders
+LEFT OUTER JOIN 
+  dsv1069.users
+ON 
+  orders.user_id = users.id
+
+/* How many users have reordered the same item? */
+
+SELECT
+  item_id,
+  COUNT(DISTINCT user_id) AS users_with_reorders
+FROM
+  dsv1069.orders
+GROUP BY
+  item_id
+HAVING
+  COUNT(DISTINCT user_id) > 1  -- Only consider items reordered by more than one user
+ORDER BY
+  users_with_reorders DESC;
+
+/* Do users even order more than once? */
+
+SELECT 
+  user_id,
+  COUNT(DISTINCT user_id) AS order_count
+FROM 
+  dsv1069.orders
+GROUP BY
+  user_id
+HAVING 
+  COUNT(DISTINCT user_id) > 1 -- Only consider users with more than one order
+ORDER BY
+  order_count DESC;
+
+
+/* Find out orders per item */
+
+SELECT 
+  item_id,
+  COUNT(user_id) AS order_count
+FROM
+  dsv1069.orders
+GROUP BY
+  item_id
+ORDER BY 
+  order_count DESC;
+
+
+/* Find out -Orders per category. */ 
+SELECT 
+  i.category,
+  COUNT(o.order_id) AS orders_count
+FROM 
+  items i
+LEFT JOIN 
+  orders o 
+ON 
+  i.id = o.item_id
+GROUP BY
+  i.category
+ORDER BY   
+  orders_count DESC;
+
+/* Do user order multiple things from the same category? */
+
+SELECT 
+  o.user_id,
+  i.category,
+  COUNT(DISTINCT i.id) AS distinct_items_count
+FROM
+  dsv1069.orders o
+JOIN 
+  dsv1069.items i 
+ON 
+  o.item_id = i.id
+GROUP BY
+  o.user_id, i.category
+HAVING 
+  COUNT(DISTINCT i.id) > 1 -- Only consider cases where users ordered multiple distinct items from the same category
+ORDER BY distinct_items_count DESC;
