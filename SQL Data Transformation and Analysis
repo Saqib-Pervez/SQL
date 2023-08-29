@@ -1,0 +1,59 @@
+--Reformat the final_assignments_qa to look like the final_assignments table, filling in any missing values with a placeholder of the appropriate data type.
+
+-- Create a new table with the structure of final_assignments
+CREATE TABLE new_final_assignments AS (
+  SELECT
+    item_id,
+    NULL AS test_assignment,  -- Placeholder for test_assignment
+    'item_test_1' AS test_number,  -- Placeholder for test_number
+    TIMESTAMP '2013-01-05 00:00:00' AS test_start_date  -- Placeholder for test_start_date
+  FROM
+    dsv1069.final_assignments_qa
+);
+
+-- Populate test_assignment column based on test_a, test_b, etc. values
+UPDATE new_final_assignments
+SET test_assignment = CASE
+  WHEN test_a = 1 THEN 'test_a'
+  WHEN test_b = 1 THEN 'test_b'
+  -- Add similar cases for other test variants
+  ELSE NULL
+END;
+
+-- Display the contents of the new table
+SELECT * FROM new_final_assignments;
+
+-- Use this table to 
+-- compute order_binary for the 30 day window after the test_start_date
+-- for the test named item_test_2
+
+SELECT
+  test_number,
+  COUNT(CASE WHEN o.created_at >= fa.test_start_date AND o.created_at <= fa.test_start_date + INTERVAL '30 days' THEN 1 ELSE 0 END) AS order_binary_30d
+FROM
+  dsv1069.final_assignments fa
+JOIN
+  dsv1069.orders o ON fa.item_id = o.user_id
+WHERE
+  fa.test_number = 'item_test_2'
+GROUP BY
+  fa.test_number
+ORDER BY 
+  order_binary_30d DESC;
+
+-- Use this table to 
+-- compute view_binary for the 30 day window after the test_start_date
+-- for the test named item_test_2
+
+SELECT
+  item_id,
+  SUM(test_assignment) AS total_test_assignments,
+  COUNT(*) AS total_users,
+  SUM(CASE WHEN test_start_date <= test_start_date + INTERVAL '30 days' THEN test_assignment ELSE 0 END) AS total_views_30_days,
+  AVG(CASE WHEN test_start_date <= test_start_date + INTERVAL '30 days' THEN test_assignment ELSE NULL END) AS avg_views_30_days
+FROM
+  dsv1069.final_assignments
+WHERE
+  item_id = 2
+GROUP BY
+  item_id;
