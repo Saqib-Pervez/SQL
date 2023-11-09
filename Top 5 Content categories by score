@@ -1,0 +1,32 @@
+-- Step 1: Join the Reaction and Content tables on Content ID
+-- Step 2: Join the result with the ReactionTypes table on the Type column
+
+    
+
+SELECT
+    r.content_id,
+    r.user_id,
+    r.type AS reaction_type,
+    rt.sentiment,
+    rt.score AS reaction_score,
+    c.category
+FROM reactions r
+LEFT JOIN content c ON r.content_id = c.content_id
+LEFT JOIN reactiontypes rt ON r.type = rt.type;
+
+-- Step 3: Calculate the total score for each Category
+-- Step 4: Rank the categories by total score and select the top 5
+
+SELECT
+    c.category,
+    SUM(rt.score) AS total_score
+FROM
+    reactions AS r
+JOIN
+    content AS c ON r.content_id = c.content_id
+JOIN
+    reactiontypes AS rt ON r.type = rt.type
+GROUP BY
+    c.Category
+ORDER BY
+    TotalScore DESC;
